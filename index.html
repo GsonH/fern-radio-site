@@ -1,0 +1,1664 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#163300">
+<meta name="description" content="FERN 电台 — 42 座城市的实时频率。此刻，世界在播。">
+<title>FERN · 全球电台，此刻在播</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23163300'/%3E%3Cg fill='%239fe870'%3E%3Crect x='13' y='26' width='6' height='12' rx='3'/%3E%3Crect x='23' y='18' width='6' height='28' rx='3'/%3E%3Crect x='33' y='14' width='6' height='36' rx='3'/%3E%3Crect x='43' y='24' width='6' height='16' rx='3'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#163300;
+  --lime:#9fe870;
+  --spruce:#054d28;
+  --linen:#e2f6d5;
+  --charcoal:#454745;
+  --obsidian:#0e0f0c;
+  --pebble:#868685;
+  --slate:#6a6c6a;
+  --fog:#e8ebe6;
+  --paper:#ffffff;
+  --hair:rgba(22,51,0,.12);
+  --font:'Inter','Noto Sans SC',ui-sans-serif,system-ui,-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{height:100%}
+body{
+  margin:0;background:var(--paper);color:var(--charcoal);
+  font-family:var(--font);font-size:15px;line-height:1.5;letter-spacing:-.006em;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+  height:100vh;height:100dvh;
+}
+h1,h2,h3,p,ul,figure{margin:0;padding:0}
+ul{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+svg{display:block}
+::selection{background:var(--lime);color:var(--forest)}
+:focus-visible{outline:2px solid var(--forest);outline-offset:2px;border-radius:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ico{width:20px;height:20px;fill:currentColor;flex:none}
+
+/* ── shell ─────────────────────────────────────── */
+.shell{position:relative;width:100%;height:100%;background:var(--paper);overflow:hidden}
+.app{position:absolute;inset:0;display:flex;flex-direction:column;min-height:0}
+.appbar{flex:none;position:relative;z-index:10;padding-top:env(safe-area-inset-top);background:var(--paper);border-bottom:1px solid var(--hair)}
+.appbar-in{height:52px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 18px}
+.brand{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.brand-tile{width:27px;height:27px;border-radius:8px;background:var(--forest);color:var(--lime);display:grid;place-items:center;flex:none}
+.brand-tile .ico{width:15px;height:15px}
+.wordmark{font-weight:900;font-size:18px;letter-spacing:-.055em;color:var(--forest);line-height:1}
+.wm-dot{width:5px;height:5px;border-radius:2px;background:var(--lime);align-self:flex-end;margin-bottom:5px;margin-left:-3px}
+.lang{display:inline-flex;align-items:center;border:1px solid var(--hair);border-radius:999px;padding:2px;height:30px;flex:none}
+.lang button{height:24px;min-width:32px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--slate);transition:background .15s ease,color .15s ease}
+.lang button[aria-pressed="true"]{background:var(--forest);color:var(--paper)}
+
+/* ── views ─────────────────────────────────────── */
+.views{position:relative;flex:1;min-height:0}
+.view{position:absolute;inset:0;display:none;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.view::-webkit-scrollbar{display:none}
+.view.active{display:block;animation:viewIn .24s var(--ease)}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pad{padding:16px 18px calc(86px + env(safe-area-inset-bottom))}
+body.has-mini .pad{padding-bottom:calc(148px + env(safe-area-inset-bottom))}
+
+.kicker{display:flex;align-items:center;gap:8px;font-size:9.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--slate)}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);flex:none;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(159,232,112,.8)}70%{box-shadow:0 0 0 8px rgba(159,232,112,0)}100%{box-shadow:0 0 0 0 rgba(159,232,112,0)}}
+.app-title{margin:10px 0 0;font-weight:900;font-size:clamp(34px,9.7vw,42px);line-height:1.02;letter-spacing:-.045em;color:var(--obsidian)}
+html[lang="zh-CN"] .app-title{letter-spacing:-.035em;line-height:1.06}
+html[lang="en"] .app-title{font-size:clamp(30px,8.7vw,38px);letter-spacing:-.05em}
+.dot-mark{display:inline-block;width:.15em;height:.15em;border-radius:2px;background:var(--lime);margin-left:.08em;vertical-align:baseline}
+.app-sub{margin-top:9px;font-size:13px;line-height:1.55;color:var(--slate);max-width:33ch}
+.view-head{padding-top:4px}
+.view-title{font-size:32px;font-weight:900;letter-spacing:-.04em;line-height:1.02;color:var(--obsidian)}
+html[lang="en"] .view-title{font-size:30px;letter-spacing:-.05em}
+.view-head .app-sub{margin-top:5px}
+
+/* ── live hero card ───────────────────────────── */
+.hero-card{margin-top:18px;background:var(--forest);color:var(--paper);border-radius:24px;padding:15px 15px 13px;position:relative}
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.live{display:inline-flex;align-items:center;gap:5px;background:var(--lime);color:var(--forest);border-radius:999px;padding:4px 9px;font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;line-height:1.2}
+.live-dot{width:4px;height:4px;border-radius:50%;background:var(--forest);animation:blink 1.8s steps(1,end) infinite}
+@keyframes blink{50%{opacity:.25}}
+.hero-chan{font-size:10px;font-weight:600;letter-spacing:.05em;color:rgba(255,255,255,.52);font-variant-numeric:tabular-nums;text-align:right}
+.hero-open{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;text-align:left}
+.hero-open:active .cover{transform:scale(.96)}
+.cover{position:relative;display:grid;place-items:center;overflow:hidden;flex:none;font-weight:900;line-height:1;letter-spacing:-.06em;transition:transform .16s var(--ease)}
+.cover-hero{width:74px;height:74px;border-radius:18px;font-size:31px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.hero-info{min-width:0;display:flex;flex-direction:column;gap:1px}
+.hero-name{font-size:20px;font-weight:800;letter-spacing:-.03em;line-height:1.15;color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-show{font-size:12px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-city{margin-top:3px;display:inline-flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.44);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-city .ico{width:10px;height:10px;opacity:.8}
+.hero-city .sep{opacity:.6}
+.hero-card .hero-wave{height:40px;color:var(--lime);margin-top:13px}
+.hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:7px}
+.hero-time{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:rgba(255,255,255,.48);font-variant-numeric:tabular-nums}
+.hero-time .ico{width:11px;height:11px;opacity:.7}
+.hero-ctrls{display:flex;align-items:center;gap:8px}
+.rnd{width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,.2);color:var(--paper);display:grid;place-items:center;transition:background .15s ease,transform .16s var(--ease)}
+.rnd .ico{width:16px;height:16px}
+.rnd:active{transform:scale(.94)}
+.rnd[aria-pressed="true"]{background:rgba(159,232,112,.14);border-color:rgba(159,232,112,.5);color:var(--lime)}
+.play{width:50px;height:50px;border-radius:999px;background:var(--lime);color:var(--forest);display:grid;place-items:center;flex:none;transition:transform .16s var(--ease)}
+.play .ico{width:20px;height:20px}
+.play:active{transform:scale(.94)}
+.play.sm{width:38px;height:38px}
+.play.sm .ico{width:15px;height:15px}
+.play.xl{width:70px;height:70px}
+.play.xl .ico{width:26px;height:26px}
+.i-pause{display:none}
+body[data-play="on"] .play .i-pause{display:block}
+body[data-play="on"] .play .i-play{display:none}
+body[data-play="on"] .row.on .row-play .i-pause{display:block}
+body[data-play="on"] .row.on .row-play .i-play{display:none}
+.i-heart-fill{display:none}
+[aria-pressed="true"] .i-heart-fill{display:block}
+[aria-pressed="true"] .i-heart{display:none}
+
+/* ── wave ──────────────────────────────────────── */
+.wave{display:flex;align-items:center;gap:2px;height:40px;color:var(--forest)}
+.wave i{flex:1;min-width:1.5px;height:var(--h);border-radius:999px;background:currentColor;opacity:.5;transform-origin:center}
+body[data-play="on"] .wave i{animation-name:bar;animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:alternate;opacity:.9}
+@keyframes bar{from{transform:scaleY(.38)}to{transform:scaleY(1)}}
+
+/* ── sections / rail ───────────────────────────── */
+.block{margin-top:25px}
+.block-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
+.block-title{font-size:16px;font-weight:800;letter-spacing:-.025em;color:var(--forest)}
+.block-meta{font-size:11px;font-weight:600;color:var(--pebble);white-space:nowrap}
+.text-btn{display:inline-flex;align-items:center;gap:1px;font-size:11.5px;font-weight:600;color:var(--forest);padding:4px 0}
+.text-btn .ico{width:11px;height:11px;opacity:.55}
+.rail{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:2px 18px 6px;}
+.rail::-webkit-scrollbar{display:none}
+.rail-card{width:136px;flex:none;text-align:left;border:1px solid transparent;border-radius:16px;padding:7px 7px 9px;transition:border-color .15s ease,transform .14s var(--ease)}
+.rail-card:active{transform:scale(.98)}
+.rail-card.on{border-color:var(--forest);box-shadow:inset 0 0 0 1px var(--forest)}
+.rail-cover{width:100%;aspect-ratio:1/1;border-radius:11px;font-size:38px}
+.rail-on{position:absolute;top:6px;left:6px;background:var(--lime);color:var(--forest);border-radius:999px;padding:2px 6px;font-size:7px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.rail-freq{position:absolute;right:7px;bottom:5px;font-size:8.5px;font-weight:700;letter-spacing:.04em;opacity:.62;font-variant-numeric:tabular-nums}
+.rail-name{display:block;margin-top:8px;font-size:13px;font-weight:700;color:var(--forest);letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail-show{display:block;margin-top:1px;font-size:10.5px;color:var(--pebble);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── schedule ──────────────────────────────────── */
+.sched{background:var(--paper);border:1px solid var(--hair);border-radius:15px;overflow:hidden}
+.sched li{display:flex;align-items:center;gap:11px;padding:10px 13px;border-bottom:1px solid var(--hair)}
+.sched li:last-child{border-bottom:0}
+.sched .t{width:43px;flex:none;font-size:11.5px;font-weight:700;color:var(--forest);font-variant-numeric:tabular-nums}
+.sched .n{flex:1;min-width:0;font-size:12.5px;color:var(--charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sched .on .n{font-weight:600;color:var(--forest)}
+.badge{flex:none;font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--forest);background:var(--linen);border-radius:999px;padding:3px 7px;white-space:nowrap}
+
+/* ── discover ──────────────────────────────────── */
+.city-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.city-card{display:flex;align-items:center;gap:9px;min-height:56px;padding:8px 9px;border:1px solid var(--hair);border-radius:12px;background:var(--paper);text-align:left;transition:background .15s ease,border-color .15s ease,transform .14s var(--ease)}
+.city-card:active{transform:scale(.98)}
+.city-card.on{background:var(--linen);border-color:var(--forest)}
+.city-code{width:31px;height:31px;border-radius:50%;background:var(--fog);color:var(--forest);display:grid;place-items:center;font-size:8.5px;font-weight:800;letter-spacing:.05em;flex:none}
+.city-card.on .city-code{background:var(--forest);color:var(--lime)}
+.city-name{display:block;font-size:12.5px;font-weight:700;color:var(--forest);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.city-freq{display:block;margin-top:1px;font-size:9.5px;color:var(--pebble);font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:0 18px 2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--hair);background:var(--paper);color:var(--forest);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex:none;transition:background .15s ease,border-color .15s ease}
+.chip .ico{width:13px;height:13px}
+.chip[aria-pressed="true"]{background:var(--lime);border-color:var(--lime)}
+.rows{display:grid;gap:7px;margin-top:10px}
+.row-item{display:grid;grid-template-columns:minmax(0,1fr) 42px;align-items:center;background:var(--paper);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.row-item.solo{grid-template-columns:1fr}
+.row{display:flex;align-items:center;gap:10px;width:100%;min-width:0;padding:8px 10px;text-align:left}
+.row:active{background:var(--fog)}
+.row-cover{width:42px;height:42px;border-radius:10px;font-size:17px}
+.row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:0}
+.row-name{font-size:13.5px;font-weight:700;color:var(--forest);letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:10.5px;color:var(--pebble);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-play{width:30px;height:30px;border-radius:999px;border:1px solid var(--hair);color:var(--forest);display:grid;place-items:center;flex:none}
+.row-play .ico{width:12px;height:12px}
+.row-item.on{border-color:var(--forest);box-shadow:inset 0 0 0 1px var(--forest)}
+.row-item.on .row-play{background:var(--forest);border-color:var(--forest);color:var(--paper)}
+.row-heart{width:42px;height:42px;display:grid;place-items:center;color:var(--forest)}
+.row-heart .ico{width:17px;height:17px}
+.row-clock{width:30px;height:30px;display:grid;place-items:center;color:var(--pebble)}
+.row-clock .ico{width:14px;height:14px}
+
+/* ── saved ─────────────────────────────────────── */
+.empty{margin-top:6px;border:1px solid var(--hair);border-radius:18px;padding:26px 20px 24px;text-align:center}
+.empty-ico{width:52px;height:52px;border-radius:999px;background:var(--linen);color:var(--forest);display:grid;place-items:center;margin:0 auto 11px}
+.empty-ico .ico{width:23px;height:23px}
+.empty-t{font-size:15.5px;font-weight:800;color:var(--forest);letter-spacing:-.02em}
+.empty-s{margin-top:4px;font-size:12px;line-height:1.5;color:var(--pebble);max-width:27ch;margin-inline:auto}
+.btn{height:40px;padding:0 17px;border-radius:999px;background:var(--forest);color:var(--paper);font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .16s var(--ease)}
+.btn:active{transform:scale(.97)}
+.empty .btn{margin-top:14px}
+.sub-card{margin-top:26px;background:var(--forest);color:var(--paper);border-radius:22px;padding:18px}
+.sub-label{display:flex;align-items:center;gap:6px;font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}
+.sub-dot{width:4px;height:4px;border-radius:2px;background:var(--lime)}
+.sub-title{margin-top:9px;font-size:24px;font-weight:900;letter-spacing:-.04em;line-height:1.05;color:var(--lime)}
+html[lang="en"] .sub-title{font-size:22px;letter-spacing:-.045em}
+.sub-text{margin-top:7px;font-size:12px;line-height:1.55;color:rgba(255,255,255,.6);max-width:30ch}
+.sub-card form{display:flex;gap:6px;margin-top:13px}
+.sub-card input{flex:1;min-width:0;height:42px;border:0;border-radius:10px;padding:0 12px;font:inherit;font-size:16px;color:var(--charcoal);background:var(--paper)}
+.sub-card input::placeholder{color:var(--pebble);font-size:13px}
+.sub-card input:focus{outline:2px solid var(--lime);outline-offset:1px}
+.sub-card .btn{height:42px;background:var(--lime);color:var(--forest);flex:none;padding:0 16px}
+.fine{margin-top:7px;font-size:10px;color:rgba(255,255,255,.42)}
+.app-note{margin:18px 0 0;text-align:center;font-size:10px;color:var(--pebble);letter-spacing:.02em}
+
+/* ── dock ──────────────────────────────────────── */
+.dock{position:absolute;left:0;right:0;bottom:0;z-index:40;background:var(--paper);border-top:1px solid var(--hair);padding-bottom:env(safe-area-inset-bottom)}
+.mini{display:none;align-items:center;gap:7px;height:56px;padding:0 9px 0 12px;border-bottom:1px solid var(--hair)}
+body.has-mini .mini{display:flex;animation:miniIn .26s var(--ease)}
+@keyframes miniIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.mini-main{display:flex;align-items:center;gap:9px;min-width:0;flex:1;text-align:left}
+.mini-cover{width:36px;height:36px;border-radius:9px;font-size:15px}
+.mini-text{display:flex;flex-direction:column;min-width:0}
+.mini-text strong{font-size:12.5px;font-weight:700;color:var(--forest);letter-spacing:-.012em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-text span{font-size:10.5px;color:var(--pebble);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-wave{display:flex;align-items:flex-end;gap:2px;width:19px;height:15px;color:var(--forest);opacity:.5;flex:none}
+.mini-wave i{flex:1;height:var(--h);min-height:2px;background:currentColor;border-radius:1px}
+body[data-play="on"] .mini-wave{opacity:.9}
+body[data-play="on"] .mini-wave i{animation-name:bar;animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:alternate}
+.tabbar{height:56px;display:grid;grid-template-columns:repeat(3,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--pebble)}
+.tab-ico{display:grid;place-items:center;width:44px;height:25px;border-radius:999px;transition:background .15s ease}
+.tab-ico .ico{width:20px;height:20px}
+.tab-label{font-size:9.5px;font-weight:600;letter-spacing:.01em}
+.tab[aria-selected="true"]{color:var(--forest)}
+.tab[aria-selected="true"] .tab-ico{background:var(--linen)}
+.tab[aria-selected="true"] .tab-label{font-weight:800}
+
+/* ── player sheet ──────────────────────────────── */
+.sheet{position:absolute;inset:0;z-index:90;background:var(--paper);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .44s var(--ease);will-change:transform;pointer-events:none}
+.sheet.open{transform:translateY(0);pointer-events:auto}
+.sheet.drag{transition:none}
+.sheet:focus{outline:none}
+.sheet-head{flex:none;padding-top:env(safe-area-inset-top);background:var(--paper);border-bottom:1px solid var(--hair);touch-action:none;cursor:grab}
+.sheet-head:active{cursor:grabbing}
+.grabber{display:block;width:36px;height:4px;border-radius:999px;background:rgba(22,51,0,.17);margin:7px auto 0}
+.sheet-nav{height:47px;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.sheet-label{font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--pebble)}
+.icobtn{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;color:var(--forest);transition:background .15s ease,transform .15s var(--ease)}
+.icobtn:active{background:var(--fog);transform:scale(.94)}
+.icobtn .ico{width:19px;height:19px}
+.sheet-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sheet-scroll::-webkit-scrollbar{display:none}
+.sheet-body{width:100%;max-width:520px;margin:0 auto;padding:10px 20px calc(30px + env(safe-area-inset-bottom))}
+.cover-lg{width:min(72vw,276px);aspect-ratio:1/1;margin:2px auto 0;border-radius:26px;font-size:clamp(84px,25vw,114px);touch-action:none}
+.cover-letter{font-weight:900;letter-spacing:-.07em;line-height:1;transform:translateY(-.02em)}
+.cover-live{position:absolute;top:12px;left:12px}
+.cover-freq{position:absolute;right:14px;bottom:10px;font-size:10.5px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums;opacity:.7}
+.sheet-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:20px}
+.sheet-name{font-size:27px;font-weight:900;letter-spacing:-.04em;line-height:1.08;color:var(--obsidian)}
+html[lang="en"] .sheet-name{letter-spacing:-.045em}
+.sheet-fav{width:41px;height:41px;border-radius:999px;border:1px solid var(--hair);display:grid;place-items:center;color:var(--forest);flex:none;margin-top:2px}
+.sheet-fav .ico{width:17px;height:17px}
+.sheet-fav[aria-pressed="true"]{background:var(--linen);border-color:var(--linen)}
+.sheet-show{margin-top:4px;font-size:12px;color:var(--slate);line-height:1.5}
+.sheet-wave{height:50px;color:var(--forest);margin-top:15px}
+.sheet-wave i{opacity:.8}
+.sheet-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px;padding:11px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.sheet-meta div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sheet-meta span{font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pebble);white-space:nowrap}
+.sheet-meta strong{font-size:14px;font-weight:700;color:var(--forest);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sheet-controls{display:flex;align-items:center;justify-content:center;gap:28px;margin-top:18px}
+.sheet-controls .rnd{width:47px;height:47px;border-color:var(--hair);color:var(--forest)}
+.sheet-controls .rnd .ico{width:19px;height:19px}
+.vol{display:flex;align-items:center;gap:10px;margin-top:17px;color:var(--forest)}
+.vol .ico{width:16px;height:16px;opacity:.7}
+.vol input{flex:1;min-width:0;accent-color:var(--forest);height:24px}
+.vol span{width:28px;text-align:right;font-size:10px;color:var(--pebble);font-variant-numeric:tabular-nums}
+.switch{margin-top:22px}
+.switch h3,.about h3,.upnext h3{font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--pebble)}
+.switch-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin-top:8px;padding-bottom:2px}
+.switch-row::-webkit-scrollbar{display:none}
+.switch-card{display:flex;align-items:center;gap:6px;padding:5px 10px 5px 5px;border:1px solid var(--hair);border-radius:999px;white-space:nowrap;flex:none;transition:border-color .15s ease}
+.switch-card .mark-sm{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:900;flex:none}
+.switch-name{font-size:10px;font-weight:600;color:var(--forest);max-width:86px;overflow:hidden;text-overflow:ellipsis}
+.switch-card.on{border-color:var(--forest);box-shadow:inset 0 0 0 1px var(--forest)}
+.about,.upnext{margin-top:22px}
+.about p{margin-top:6px;font-size:13px;line-height:1.6;color:var(--charcoal)}
+.upnext ul{margin-top:2px}
+.upnext li{display:flex;align-items:baseline;gap:13px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:12.5px}
+.upnext li:last-child{border-bottom:0}
+.upnext .t{width:43px;flex:none;font-size:11.5px;font-weight:700;color:var(--forest);font-variant-numeric:tabular-nums}
+.upnext .n{flex:1;color:var(--charcoal);min-width:0}
+
+/* ── toast ─────────────────────────────────────── */
+.toast{position:absolute;left:50%;bottom:calc(72px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:120;background:var(--obsidian);color:var(--paper);font-size:12px;font-weight:500;padding:9px 15px;border-radius:999px;max-width:min(86vw,400px);text-align:center;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.16)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+body.has-mini .toast{bottom:calc(128px + env(safe-area-inset-bottom))}
+body.lock .toast{top:calc(68px + env(safe-area-inset-top));bottom:auto;transform:translate(-50%,-8px)}
+body.lock .toast.show{transform:translate(-50%,0)}
+
+/* ── misc ──────────────────────────────────────── */
+.hero-card :focus-visible{outline-color:var(--lime)}
+@media (max-width:360px){
+  .appbar-in{padding-inline:15px}
+  .pad{padding-inline:15px}
+  .rail{margin-inline:-15px;padding-inline:15px}
+  .chips{margin-inline:-15px;padding-inline:15px}
+  .hero-name{font-size:18px}
+  .app-title{font-size:33px}
+  .rail-card{width:128px}
+  .city-grid{gap:6px}
+  .city-card{gap:7px;padding-inline:7px}
+  .city-code{width:28px;height:28px;font-size:8px}
+}
+@media (min-width:760px) and (min-height:540px){
+  body{display:grid;place-items:center;background:var(--forest);padding:24px}
+  .shell{width:420px;height:min(880px,calc(100dvh - 48px));border:1px solid rgba(159,232,112,.22);border-radius:30px;box-shadow:0 40px 90px rgba(0,0,0,.45)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body data-play="off">
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><symbol id="i-play" viewBox="0 0 256 256"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></symbol><symbol id="i-pause" viewBox="0 0 256 256"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></symbol><symbol id="i-heart" viewBox="0 0 256 256"><path d="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"/></symbol><symbol id="i-heart-fill" viewBox="0 0 256 256"><path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/></symbol><symbol id="i-broadcast" viewBox="0 0 256 256"><path d="M128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Zm73.71,7.14a80,80,0,0,1-14.08,22.2,8,8,0,0,1-11.92-10.67,63.95,63.95,0,0,0,0-85.33,8,8,0,1,1,11.92-10.67,80.08,80.08,0,0,1,14.08,84.47ZM69,103.09a64,64,0,0,0,11.26,67.58,8,8,0,0,1-11.92,10.67,79.93,79.93,0,0,1,0-106.67A8,8,0,1,1,80.29,85.34,63.77,63.77,0,0,0,69,103.09ZM248,128a119.58,119.58,0,0,1-34.29,84,8,8,0,1,1-11.42-11.2,103.9,103.9,0,0,0,0-145.56A8,8,0,1,1,213.71,44,119.58,119.58,0,0,1,248,128ZM53.71,200.78A8,8,0,1,1,42.29,212a119.87,119.87,0,0,1,0-168,8,8,0,1,1,11.42,11.2,103.9,103.9,0,0,0,0,145.56Z"/></symbol><symbol id="i-compass" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM172.42,72.84l-64,32a8.05,8.05,0,0,0-3.58,3.58l-32,64A8,8,0,0,0,80,184a8.1,8.1,0,0,0,3.58-.84l64-32a8.05,8.05,0,0,0,3.58-3.58l32-64a8,8,0,0,0-10.74-10.74ZM138,138,97.89,158.11,118,118l40.15-20.07Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol><symbol id="i-share-network" viewBox="0 0 256 256"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></symbol><symbol id="i-map-pin" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></symbol><symbol id="i-clock" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/></symbol><symbol id="i-headphones" viewBox="0 0 256 256"><path d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88,88,0,0,1,128,40h.67a87.71,87.71,0,0,1,87,80H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h16a24,24,0,0,0,24-24V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm152,48a8,8,0,0,1-8,8H192a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24Z"/></symbol><symbol id="i-envelope" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></symbol><symbol id="i-radio" viewBox="0 0 256 256"><path d="M104,168a8,8,0,0,1-8,8H64a8,8,0,0,1,0-16H96A8,8,0,0,1,104,168Zm-8-40H64a8,8,0,0,0,0,16H96a8,8,0,0,0,0-16Zm0-32H64a8,8,0,0,0,0,16H96a8,8,0,0,0,0-16ZM232,80V192a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V72a8,8,0,0,1,5.7-7.66l160-48a8,8,0,0,1,4.6,15.33L86.51,64H216A16,16,0,0,1,232,80ZM216,192V80H40V192H216Zm-16-56a40,40,0,1,1-40-40A40,40,0,0,1,200,136Zm-16,0a24,24,0,1,0-24,24A24,24,0,0,0,184,136Z"/></symbol><symbol id="i-waveform" viewBox="0 0 256 256"><path d="M56,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0ZM88,24a8,8,0,0,0-8,8V224a8,8,0,0,0,16,0V32A8,8,0,0,0,88,24Zm40,32a8,8,0,0,0-8,8V192a8,8,0,0,0,16,0V64A8,8,0,0,0,128,56Zm40,32a8,8,0,0,0-8,8v64a8,8,0,0,0,16,0V96A8,8,0,0,0,168,88Zm40-16a8,8,0,0,0-8,8v96a8,8,0,0,0,16,0V80A8,8,0,0,0,208,72Z"/></symbol><symbol id="i-skip-back" viewBox="0 0 256 256"><path d="M199.81,34a16,16,0,0,0-16.24.43L64,109.23V40a8,8,0,0,0-16,0V216a8,8,0,0,0,16,0V146.77l119.57,74.78A15.95,15.95,0,0,0,208,208.12V47.88A15.86,15.86,0,0,0,199.81,34ZM192,208,64.16,128,192,48.07Z"/></symbol><symbol id="i-skip-forward" viewBox="0 0 256 256"><path d="M200,32a8,8,0,0,0-8,8v69.23L72.43,34.45A15.95,15.95,0,0,0,48,47.88V208.12a16,16,0,0,0,24.43,13.43L192,146.77V216a8,8,0,0,0,16,0V40A8,8,0,0,0,200,32ZM64,207.93V48.05l127.84,80Z"/></symbol><symbol id="i-speaker-high" viewBox="0 0 256 256"><path d="M155.51,24.81a8,8,0,0,0-8.42.88L77.25,80H32A16,16,0,0,0,16,96v64a16,16,0,0,0,16,16H77.25l69.84,54.31A8,8,0,0,0,160,224V32A8,8,0,0,0,155.51,24.81ZM32,96H72v64H32ZM144,207.64,88,164.09V91.91l56-43.55Zm54-106.08a40,40,0,0,1,0,52.88,8,8,0,0,1-12-10.58,24,24,0,0,0,0-31.72,8,8,0,0,1,12-10.58ZM248,128a79.9,79.9,0,0,1-20.37,53.34,8,8,0,0,1-11.92-10.67,64,64,0,0,0,0-85.33,8,8,0,1,1,11.92-10.67A79.83,79.83,0,0,1,248,128Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-music-notes" viewBox="0 0 256 256"><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></symbol><symbol id="i-user-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"/></symbol></svg>
+
+<div class="shell" id="shell">
+  <div class="app" id="appBody">
+    <header class="appbar">
+      <div class="appbar-in">
+        <button class="brand" id="brandBtn" aria-label="FERN">
+          <span class="brand-tile"><svg class="ico" aria-hidden="true"><use href="#i-waveform"/></svg></span>
+          <span class="wordmark">FERN</span>
+          <span class="wm-dot" aria-hidden="true"></span>
+        </button>
+        <div class="lang" role="group" aria-label="Language">
+          <button id="langZh" aria-pressed="true">中</button>
+          <button id="langEn" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="views" id="views">
+      <!-- LIVE -->
+      <section class="view active" id="view-live" data-view="live" role="tabpanel" aria-labelledby="tabLive">
+        <div class="pad">
+          <p class="kicker"><span class="pulse" aria-hidden="true"></span><span data-i18n="liveKicker">42 座城市 · 此刻直播</span></p>
+          <h1 class="app-title" data-i18n-html="liveTitle">此刻，<br>世界在播<span class="dot-mark"></span></h1>
+          <p class="app-sub" data-i18n="liveSub">没有推荐算法，只有人和此刻的声音。</p>
+
+          <article class="hero-card">
+            <div class="hero-top">
+              <span class="live"><span class="live-dot" aria-hidden="true"></span><span data-i18n="live">直播中</span></span>
+              <span class="hero-chan" id="heroChan">CH 01 · 88.7 FM</span>
+            </div>
+            <button class="hero-open" id="heroOpen">
+              <span class="cover cover-hero" id="heroMark" aria-hidden="true">F</span>
+              <span class="hero-info">
+                <span class="hero-name" id="heroName">FERN 原声</span>
+                <span class="hero-show" id="heroShow">晨间森林 · 林斐</span>
+                <span class="hero-city">
+                  <svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg>
+                  <span id="heroCity">上海</span><span class="sep" aria-hidden="true">·</span><span id="heroListeners">12,483 人正在听</span>
+                </span>
+              </span>
+            </button>
+            <div class="wave hero-wave" id="heroWave" aria-hidden="true"></div>
+            <div class="hero-foot">
+              <span class="hero-time"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span id="heroElapsed">00:00</span></span>
+              <div class="hero-ctrls">
+                <button class="rnd" id="heroFav" aria-pressed="false" aria-label="收藏">
+                  <svg class="ico i-heart" aria-hidden="true"><use href="#i-heart"/></svg>
+                  <svg class="ico i-heart-fill" aria-hidden="true"><use href="#i-heart-fill"/></svg>
+                </button>
+                <button class="play" id="heroPlay" aria-label="播放">
+                  <svg class="ico i-play" aria-hidden="true"><use href="#i-play"/></svg>
+                  <svg class="ico i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <section class="block">
+            <div class="block-head">
+              <h2 class="block-title" data-i18n="allFreq">所有频率</h2>
+              <button class="text-btn" id="goDiscover"><span data-i18n="seeAll">查看全部</span><svg class="ico" aria-hidden="true"><use href="#i-caret-right"/></svg></button>
+            </div>
+            <div class="rail" id="rail"></div>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <h2 class="block-title" data-i18n="schedTitle">今日节目</h2>
+              <span class="block-meta" id="schedStation">FERN 原声</span>
+            </div>
+            <ul class="sched" id="schedList"></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- DISCOVER -->
+      <section class="view" id="view-discover" data-view="discover" role="tabpanel" aria-labelledby="tabDiscover">
+        <div class="pad">
+          <header class="view-head">
+            <h1 class="view-title" data-i18n="discoverTitle">发现</h1>
+            <p class="app-sub" data-i18n="discoverSub">按城市，或按此刻的心情调频。</p>
+          </header>
+
+          <section class="block">
+            <div class="block-head">
+              <h2 class="block-title" data-i18n="citiesTitle">城市频率</h2>
+              <span class="block-meta" data-i18n="citiesCount">10 座城市</span>
+            </div>
+            <div class="city-grid" id="cityGrid"></div>
+          </section>
+
+          <section class="block" id="stationsSection">
+            <div class="block-head">
+              <h2 class="block-title" data-i18n="stationsTitle">全部电台</h2>
+            </div>
+            <div class="chips" id="chips" role="group"></div>
+            <ul class="rows" id="stationList"></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- SAVED -->
+      <section class="view" id="view-saved" data-view="saved" role="tabpanel" aria-labelledby="tabSaved">
+        <div class="pad">
+          <header class="view-head">
+            <h1 class="view-title" data-i18n="savedTitle">收藏</h1>
+            <p class="app-sub" data-i18n="savedSub">留在耳边的地方。</p>
+          </header>
+
+          <div id="savedWrap"></div>
+
+          <section class="sub-card">
+            <p class="sub-label"><span class="sub-dot" aria-hidden="true"></span><span data-i18n="subLabel">节目单 · 每周五</span></p>
+            <h2 class="sub-title" data-i18n-html="subTitle">把电台<br>装进口袋。</h2>
+            <p class="sub-text" data-i18n="subText">每周节目单和新频率上线，只发一封。</p>
+            <form id="subForm" novalidate>
+              <label class="sr" for="email" data-i18n="subPh">你的邮箱</label>
+              <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="你的邮箱" data-i18n-ph="subPh">
+              <button class="btn" type="submit"><span data-i18n="subBtn">订阅</span></button>
+            </form>
+            <p class="fine" data-i18n="subFine">每周一封，随时退订。</p>
+          </section>
+
+          <p class="app-note" data-i18n="appNote">FERN · 42 座城市 · © 2026</p>
+        </div>
+      </section>
+    </main>
+
+    <div class="dock">
+      <div class="mini" id="mini">
+        <button class="mini-main" id="miniOpen" aria-label="打开播放器">
+          <span class="cover mini-cover" id="miniMark" aria-hidden="true">F</span>
+          <span class="mini-text"><strong id="miniName">FERN 原声</strong><span id="miniShow">晨间森林 · 林斐</span></span>
+        </button>
+        <div class="mini-wave" id="miniWave" aria-hidden="true"></div>
+        <button class="play sm" id="miniPlay" aria-label="播放">
+          <svg class="ico i-play" aria-hidden="true"><use href="#i-play"/></svg>
+          <svg class="ico i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+        </button>
+      </div>
+      <nav class="tabbar" id="tabbar" role="tablist" aria-label="主导航">
+        <button class="tab" id="tabLive" role="tab" aria-selected="true" aria-controls="view-live" data-tab="live">
+          <span class="tab-ico"><svg class="ico" aria-hidden="true"><use href="#i-broadcast"/></svg></span>
+          <span class="tab-label" data-i18n="tabLive">直播</span>
+        </button>
+        <button class="tab" id="tabDiscover" role="tab" aria-selected="false" aria-controls="view-discover" data-tab="discover">
+          <span class="tab-ico"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg></span>
+          <span class="tab-label" data-i18n="tabDiscover">发现</span>
+        </button>
+        <button class="tab" id="tabSaved" role="tab" aria-selected="false" aria-controls="view-saved" data-tab="saved">
+          <span class="tab-ico"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg></span>
+          <span class="tab-label" data-i18n="tabSaved">收藏</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="播放器" aria-hidden="true" tabindex="-1" inert>
+    <div class="sheet-head" id="sheetHead">
+      <span class="grabber" aria-hidden="true"></span>
+      <div class="sheet-nav">
+        <button class="icobtn" id="sheetClose" aria-label="关闭"><svg class="ico" aria-hidden="true"><use href="#i-caret-down"/></svg></button>
+        <span class="sheet-label" data-i18n="nowPlaying">正在播放</span>
+        <button class="icobtn" id="sheetShare" aria-label="分享"><svg class="ico" aria-hidden="true"><use href="#i-share-network"/></svg></button>
+      </div>
+    </div>
+    <div class="sheet-scroll" id="sheetScroll">
+      <div class="sheet-body">
+        <div class="cover cover-lg" id="cover">
+          <span class="cover-letter" id="coverMark">F</span>
+          <span class="live cover-live"><span class="live-dot" aria-hidden="true"></span><span data-i18n="live">直播中</span></span>
+          <span class="cover-freq" id="coverFreq">88.7 FM</span>
+        </div>
+
+        <div class="sheet-title-row">
+          <h2 class="sheet-name" id="sheetName">FERN 原声</h2>
+          <button class="sheet-fav" id="sheetFav" aria-pressed="false" aria-label="收藏">
+            <svg class="ico i-heart" aria-hidden="true"><use href="#i-heart"/></svg>
+            <svg class="ico i-heart-fill" aria-hidden="true"><use href="#i-heart-fill"/></svg>
+          </button>
+        </div>
+        <p class="sheet-show" id="sheetShow">晨间森林 · 林斐 · 上海</p>
+        <div class="wave sheet-wave" id="sheetWave" aria-hidden="true"></div>
+
+        <div class="sheet-meta">
+          <div><span data-i18n="sheetListen">收听时长</span><strong id="sheetElapsed">00:00</strong></div>
+          <div><span data-i18n="sheetFreq">频率</span><strong id="sheetFreq">88.7 FM</strong></div>
+          <div><span data-i18n="sheetListeners">听众</span><strong id="sheetListeners">12,483</strong></div>
+        </div>
+
+        <div class="sheet-controls">
+          <button class="rnd" id="prevBtn" aria-label="上一个频率"><svg class="ico" aria-hidden="true"><use href="#i-skip-back"/></svg></button>
+          <button class="play xl" id="sheetPlay" aria-label="播放">
+            <svg class="ico i-play" aria-hidden="true"><use href="#i-play"/></svg>
+            <svg class="ico i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+          </button>
+          <button class="rnd" id="nextBtn" aria-label="下一个频率"><svg class="ico" aria-hidden="true"><use href="#i-skip-forward"/></svg></button>
+        </div>
+
+        <div class="vol">
+          <svg class="ico" aria-hidden="true"><use href="#i-speaker-high"/></svg>
+          <label class="sr" for="vol" data-i18n="volume">音量</label>
+          <input type="range" id="vol" min="0" max="100" step="1" value="70">
+          <span id="volVal">70</span>
+        </div>
+
+        <div class="switch">
+          <h3 data-i18n="switchTitle">更换频率</h3>
+          <div class="switch-row" id="switchRow"></div>
+        </div>
+
+        <div class="about">
+          <h3 data-i18n="sheetAbout">关于这档节目</h3>
+          <p id="sheetDesc"></p>
+        </div>
+
+        <div class="upnext">
+          <h3 data-i18n="sheetUpNext">接下来</h3>
+          <ul id="sheetSched"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ── storage ─────────────────────────────────── */
+  var store = {
+    get: function(k, d){ try { var v = localStorage.getItem(k); return v === null ? d : v; } catch(e){ return d; } },
+    set: function(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+  };
+  var $ = function(id){ return document.getElementById(id); };
+  var $$ = function(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+  /* ── data ────────────────────────────────────── */
+  var STATIONS = [
+    {
+      id:'fern', mark:'F', bg:'#163300', fg:'#9fe870', light:false, cat:'music',
+      name:{zh:'FERN 原声', en:'FERN Originals'},
+      show:{zh:'晨间森林', en:'Morning Woods'},
+      host:{zh:'林斐', en:'Fei Lin'},
+      city:{zh:'上海', en:'Shanghai'},
+      tag:{zh:'音乐', en:'Music'},
+      freq:'88.7', listeners:12483, root:57, chord:[0,7,12,16,19],
+      desc:{zh:'在没有闹钟的清晨，用两小时慢音乐和城市现场声，把耳朵叫醒。', en:'Two hours of slow music and city field recordings to wake a city up — no alarms.'},
+      sched:[
+        {t:'06:00', zh:'晨间森林', en:'Morning Woods'},
+        {t:'08:00', zh:'慢速早餐', en:'Slow Breakfast'},
+        {t:'10:00', zh:'林间书桌', en:'Desk in the Woods'}
+      ]
+    },
+    {
+      id:'nightflight', mark:'N', bg:'#0e0f0c', fg:'#e2f6d5', light:false, cat:'electronic',
+      name:{zh:'夜航', en:'Night Flight'},
+      show:{zh:'午夜频率', en:'Midnight Frequency'},
+      host:{zh:'Ada', en:'Ada'},
+      city:{zh:'东京', en:'Tokyo'},
+      tag:{zh:'电子', en:'Electronic'},
+      freq:'81.3', listeners:8901, root:50, chord:[0,3,7,10,14],
+      desc:{zh:'午夜之后，合成器与心跳同频。给夜班、长途，和还没睡的人。', en:'After midnight, synths at the same frequency as your pulse. For night shifts, long drives and the not-yet-sleepy.'},
+      sched:[
+        {t:'23:00', zh:'午夜频率', en:'Midnight Frequency'},
+        {t:'01:00', zh:'合成器房间', en:'Synth Room'},
+        {t:'03:00', zh:'无眠者名单', en:'The Insomniacs'}
+      ]
+    },
+    {
+      id:'spruce', mark:'S', bg:'#054d28', fg:'#e2f6d5', light:false, cat:'jazz',
+      name:{zh:'Spruce Jazz', en:'Spruce Jazz'},
+      show:{zh:'蓝调松林', en:'Blue Spruce'},
+      host:{zh:'Marco', en:'Marco'},
+      city:{zh:'柏林', en:'Berlin'},
+      tag:{zh:'爵士', en:'Jazz'},
+      freq:'94.1', listeners:5620, root:55, chord:[0,4,7,11,14],
+      desc:{zh:'每周一位驻场乐手，从蓝调到自由爵士，全部现场录制。', en:'A resident player every week — from blues to free jazz, all recorded live in the room.'},
+      sched:[
+        {t:'20:00', zh:'蓝调松林', en:'Blue Spruce'},
+        {t:'21:30', zh:'驻场乐手', en:'Artist in Residence'},
+        {t:'23:00', zh:'松脂与烟', en:'Resin & Smoke'}
+      ]
+    },
+    {
+      id:'pulse', mark:'C', bg:'#e8ebe6', fg:'#163300', light:true, cat:'talk',
+      name:{zh:'城市脉冲', en:'City Pulse'},
+      show:{zh:'通勤现场', en:'Commute Live'},
+      host:{zh:'阿禾', en:'He'},
+      city:{zh:'伦敦', en:'London'},
+      tag:{zh:'城市', en:'City'},
+      freq:'101.9', listeners:15420, root:53, chord:[0,5,7,12,17],
+      desc:{zh:'通勤路上的城市现场：报站、人群、街角演出，和一段不赶时间的对话。', en:'City sound on your commute: station announcements, crowds, buskers, and one unhurried conversation.'},
+      sched:[
+        {t:'07:30', zh:'通勤现场', en:'Commute Live'},
+        {t:'09:00', zh:'街角', en:'The Corner'},
+        {t:'12:30', zh:'午间人群', en:'Noon Crowd'}
+      ]
+    },
+    {
+      id:'field', mark:'D', bg:'#e2f6d5', fg:'#163300', light:true, cat:'talk',
+      name:{zh:'田野档案', en:'Field Notes'},
+      show:{zh:'声音地理', en:'Sonic Geography'},
+      host:{zh:'Iris', en:'Iris'},
+      city:{zh:'里斯本', en:'Lisbon'},
+      tag:{zh:'谈话', en:'Talk'},
+      freq:'89.2', listeners:3187, root:48, chord:[0,2,7,9,12],
+      desc:{zh:'声音地理学者和纪录片录音师，把一座山、一条河、一个菜市场讲给你听。', en:'A sound geographer and a documentary recordist walk you through a mountain, a river, a wet market.'},
+      sched:[
+        {t:'10:00', zh:'声音地理', en:'Sonic Geography'},
+        {t:'14:00', zh:'山脊线', en:'Ridgeline'},
+        {t:'18:00', zh:'菜市场', en:'Wet Market'}
+      ]
+    },
+    {
+      id:'island', mark:'I', bg:'#ffffff', fg:'#163300', light:true, cat:'music',
+      name:{zh:'海岛频率', en:'Island FM'},
+      show:{zh:'潮汐与风', en:'Tides & Wind'},
+      host:{zh:'Noa', en:'Noa'},
+      city:{zh:'墨西哥城', en:'Mexico City'},
+      tag:{zh:'氛围', en:'Ambient'},
+      freq:'96.0', listeners:7410, root:60, chord:[0,7,12,14,19],
+      desc:{zh:'潮汐、风、渔船发动机。来自十座海岛的环境录音，24 小时不剪辑。', en:'Tides, wind, fishing boat engines. Field recordings from ten islands, unedited, 24 hours.'},
+      sched:[
+        {t:'05:30', zh:'潮汐与风', en:'Tides & Wind'},
+        {t:'12:00', zh:'正午海面', en:'Noon Sea'},
+        {t:'19:00', zh:'归港', en:'Back to Port'}
+      ]
+    }
+  ];
+  STATIONS.forEach(function(s, i){ s.idx = i; s._delta = 0; });
+
+  var CITIES = [
+    {code:'SHA', zh:'上海', en:'Shanghai', freq:'88.7', st:0},
+    {code:'TYO', zh:'东京', en:'Tokyo', freq:'81.3', st:1},
+    {code:'BER', zh:'柏林', en:'Berlin', freq:'94.1', st:2},
+    {code:'LON', zh:'伦敦', en:'London', freq:'101.9', st:3},
+    {code:'NYC', zh:'纽约', en:'New York', freq:'90.5', st:5},
+    {code:'SEL', zh:'首尔', en:'Seoul', freq:'95.5', st:0},
+    {code:'PAR', zh:'巴黎', en:'Paris', freq:'97.4', st:2},
+    {code:'TPE', zh:'台北', en:'Taipei', freq:'92.1', st:3},
+    {code:'LIS', zh:'里斯本', en:'Lisbon', freq:'89.2', st:4},
+    {code:'MEX', zh:'墨西哥城', en:'Mexico', freq:'96.0', st:5}
+  ];
+
+  var T = {
+    zh: {
+      docTitle:'FERN · 全球电台，此刻在播',
+      tabLive:'直播', tabDiscover:'发现', tabSaved:'收藏',
+      navLabel:'主导航', player:'播放器',
+      live:'直播中',
+      liveKicker:'42 座城市 · 此刻直播',
+      liveTitle:'此刻，<br>世界在播<span class="dot-mark"></span>',
+      liveSub:'没有推荐算法，只有人和此刻的声音。',
+      npListeners:'{n} 人正在听',
+      allFreq:'所有频率', seeAll:'查看全部',
+      schedTitle:'今日节目', schedLive:'正在播出',
+      discoverTitle:'发现', discoverSub:'按城市，或按此刻的心情调频。',
+      citiesTitle:'城市频率', citiesCount:'10 座城市',
+      stationsTitle:'全部电台',
+      chipAll:'全部', chipMusic:'音乐', chipTalk:'谈话', chipElectronic:'电子', chipJazz:'爵士',
+      savedTitle:'收藏', savedSub:'留在耳边的地方。',
+      savedSection:'我的收藏', savedCount:'{n} 个频率', recentTitle:'最近收听',
+      emptyTitle:'收藏还是空的',
+      emptySub:'在任意电台上点一下心形，它就会留在这里。',
+      emptyBtn:'去发现',
+      subLabel:'节目单 · 每周五',
+      subTitle:'把电台<br>装进口袋。',
+      subText:'每周节目单和新频率上线，只发一封。',
+      subPh:'你的邮箱', subBtn:'订阅', subFine:'每周一封，随时退订。',
+      appNote:'FERN · 42 座城市 · © 2026',
+      nowPlaying:'正在播放',
+      sheetListen:'收听时长', sheetFreq:'频率', sheetListeners:'听众',
+      switchTitle:'更换频率',
+      sheetAbout:'关于这档节目', sheetUpNext:'接下来',
+      volume:'音量',
+      fav:'收藏', unfav:'已收藏',
+      play:'播放', pause:'暂停',
+      close:'关闭', share:'分享', expand:'打开播放器',
+      prev:'上一个频率', next:'下一个频率',
+      toastTuned:'已调至 {city} {freq} FM',
+      toastPlaying:'正在收听 {name}',
+      toastSub:'订阅成功，周五见。',
+      toastEmail:'请输入有效的邮箱地址',
+      toastCopied:'链接已复制',
+      toastFav:'已加入收藏',
+      toastUnfav:'已取消收藏',
+      audioBlocked:'当前浏览器无法播放音频'
+    },
+    en: {
+      docTitle:'FERN · The world, on air',
+      tabLive:'Live', tabDiscover:'Discover', tabSaved:'Saved',
+      navLabel:'Main', player:'Player',
+      live:'Live',
+      liveKicker:'42 CITIES · LIVE NOW',
+      liveTitle:'THE WORLD,<br>ON AIR<span class="dot-mark"></span>',
+      liveSub:'Live city radio, no algorithm. Just people and the sound of right now.',
+      npListeners:'{n} listening',
+      allFreq:'All frequencies', seeAll:'See all',
+      schedTitle:"Today's schedule", schedLive:'On air',
+      discoverTitle:'Discover', discoverSub:'Tune by city, or by the mood you are in.',
+      citiesTitle:'City frequencies', citiesCount:'10 cities',
+      stationsTitle:'All stations',
+      chipAll:'All', chipMusic:'Music', chipTalk:'Talk', chipElectronic:'Electronic', chipJazz:'Jazz',
+      savedTitle:'Saved', savedSub:'Frequencies you keep close.',
+      savedSection:'Your stations', savedCount:'{n} saved', recentTitle:'Recently played',
+      emptyTitle:'Nothing saved yet',
+      emptySub:'Tap the heart on any station to keep it here.',
+      emptyBtn:'Find stations',
+      subLabel:'The schedule · Fridays',
+      subTitle:'RADIO IN<br>YOUR POCKET.',
+      subText:'Weekly schedules and new frequencies. One email, nothing else.',
+      subPh:'Your email', subBtn:'Subscribe', subFine:'One email a week. Unsubscribe anytime.',
+      appNote:'FERN · 42 cities · © 2026',
+      nowPlaying:'Now playing',
+      sheetListen:'Listening', sheetFreq:'Frequency', sheetListeners:'Listeners',
+      switchTitle:'Switch frequency',
+      sheetAbout:'About the show', sheetUpNext:'Up next',
+      volume:'Volume',
+      fav:'Save', unfav:'Saved',
+      play:'Play', pause:'Pause',
+      close:'Close', share:'Share', expand:'Open player',
+      prev:'Previous frequency', next:'Next frequency',
+      toastTuned:'Tuned to {city} {freq} FM',
+      toastPlaying:'Now playing {name}',
+      toastSub:'You’re in. See you Friday.',
+      toastEmail:'Enter a valid email address',
+      toastCopied:'Link copied',
+      toastFav:'Added to saved',
+      toastUnfav:'Removed from saved',
+      audioBlocked:'Audio is not available in this browser'
+    }
+  };
+
+  var state = {
+    lang: (function(){
+      var saved = store.get('fern.lang', '');
+      if (saved === 'zh' || saved === 'en') return saved;
+      return 'zh';
+    })(),
+    station: 0,
+    playing: false,
+    filter: 'all',
+    elapsed: 0,
+    startedAt: 0,
+    volume: (function(){
+      var v = parseFloat(store.get('fern.vol', '0.7'));
+      return isNaN(v) ? 0.7 : Math.min(1, Math.max(0, v));
+    })(),
+    favs: (function(){
+      try { return new Set(JSON.parse(store.get('fern.favs', '[]'))); }
+      catch(e){ return new Set(); }
+    })(),
+    recent: (function(){
+      try {
+        var a = JSON.parse(store.get('fern.recent', '[]'));
+        if (!Array.isArray(a)) return [];
+        return a.filter(function(id){
+          return STATIONS.some(function(s){ return s.id === id; });
+        }).slice(0, 5);
+      } catch(e){ return []; }
+    })(),
+    tab: '',
+    tuneCity: null,
+    sessionStarted: false
+  };
+
+  function cur(){ return STATIONS[state.station]; }
+  function cityOf(){
+    var st = cur();
+    return state.tuneCity || { zh: st.city.zh, en: st.city.en, freq: st.freq };
+  }
+  function t(k){ return (T[state.lang] && T[state.lang][k] != null) ? T[state.lang][k] : (T.zh[k] || k); }
+  function tpl(k, vars){
+    return t(k).replace(/\{(\w+)\}/g, function(m, p){ return vars[p] != null ? vars[p] : m; });
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(c){
+      return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;';
+    });
+  }
+  function fmt(n){ return n.toLocaleString('en-US'); }
+  function pad2(n){ return (n < 10 ? '0' : '') + n; }
+  function fmtTime(sec){
+    var s = Math.max(0, Math.floor(sec));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    return h > 0 ? h + ':' + pad2(m) + ':' + pad2(x) : pad2(m) + ':' + pad2(x);
+  }
+  function liveCount(st){ return Math.max(80, st.listeners + st._delta); }
+  function coverStyle(st, ring){
+    var r = st.light ? 'rgba(22,51,0,.12)' : (ring || 'rgba(255,255,255,.14)');
+    return 'background:' + st.bg + ';color:' + st.fg + ';box-shadow:inset 0 0 0 1px ' + r;
+  }
+  function tick(){
+    if (navigator.vibrate){ try { navigator.vibrate(5); } catch(e){} }
+  }
+
+  /* ── toast ───────────────────────────────────── */
+  var toastTimer = null;
+  function toast(msg){
+    var el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2300);
+  }
+
+  /* ── audio ───────────────────────────────────── */
+  var AudioCtx = window.AudioContext || window.webkitAudioContext;
+  var ac = null, master = null, bus = null, voices = [], bellTimer = null, stationToken = 0;
+
+  function midiHz(n){ return 440 * Math.pow(2, (n - 69) / 12); }
+
+  function initAudio(){
+    if (ac) return true;
+    if (!AudioCtx) return false;
+    try {
+      ac = new AudioCtx();
+      master = ac.createGain();
+      master.gain.value = 0;
+      var comp = ac.createDynamicsCompressor();
+      comp.threshold.value = -20;
+      comp.knee.value = 18;
+      comp.ratio.value = 3.2;
+      comp.attack.value = 0.008;
+      comp.release.value = 0.28;
+      master.connect(comp);
+      comp.connect(ac.destination);
+      return true;
+    } catch(e){ return false; }
+  }
+
+  function setMaster(v, tc){
+    if (!master || !ac) return;
+    var now = ac.currentTime;
+    try {
+      master.gain.cancelScheduledValues(now);
+      master.gain.setTargetAtTime(v, now, tc || 0.2);
+    } catch(e){}
+  }
+
+  function stopVoices(){
+    clearInterval(bellTimer);
+    bellTimer = null;
+    stationToken++;
+    if (!ac) return;
+    if (bus){
+      var b = bus;
+      bus = null;
+      var now = ac.currentTime;
+      try {
+        b.gain.cancelScheduledValues(now);
+        b.gain.setTargetAtTime(0, now, 0.05);
+      } catch(e){}
+      setTimeout(function(){ try { b.disconnect(); } catch(e){} }, 380);
+    }
+    voices.forEach(function(o){ try { o.stop(ac.currentTime + 0.06); } catch(e){} });
+    voices = [];
+  }
+
+  function startStation(st){
+    if (!ac) return;
+    stopVoices();
+    var token = stationToken;
+    var now = ac.currentTime;
+
+    bus = ac.createGain();
+    bus.gain.setValueAtTime(0.0001, now);
+    bus.gain.linearRampToValueAtTime(1, now + 0.6);
+
+    var filter = ac.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1150;
+    filter.Q.value = 0.5;
+    filter.connect(bus);
+    bus.connect(master);
+
+    st.chord.forEach(function(semi, i){
+      var osc = ac.createOscillator();
+      osc.type = i === 0 ? 'sine' : (i % 2 ? 'triangle' : 'sine');
+      osc.frequency.setValueAtTime(midiHz(st.root + semi), now);
+      osc.detune.value = (i % 2 ? 4 : -4) * (1 + i * 0.2);
+      var g = ac.createGain();
+      g.gain.value = 0.14 / (1 + i * 0.75);
+      osc.connect(g);
+      g.connect(filter);
+      osc.start(now);
+      voices.push(osc);
+    });
+
+    var sub = ac.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(midiHz(st.root - 12), now);
+    var sg = ac.createGain();
+    sg.gain.value = 0.05;
+    sub.connect(sg);
+    sg.connect(filter);
+    sub.start(now);
+    voices.push(sub);
+
+    var lfo = ac.createOscillator();
+    lfo.frequency.value = 0.05 + (st.idx % 3) * 0.011;
+    var lg = ac.createGain();
+    lg.gain.value = 380;
+    lfo.connect(lg);
+    lg.connect(filter.frequency);
+    lfo.start(now);
+    voices.push(lfo);
+
+    function ring(){
+      if (token !== stationToken || !ac || !bus) return;
+      var notes = st.chord.map(function(s){ return st.root + 12 + s; });
+      var pick = notes[Math.floor(Math.random() * notes.length)] + (Math.random() < 0.35 ? 12 : 0);
+      var o = ac.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(midiHz(pick), ac.currentTime);
+      var g = ac.createGain();
+      var t0 = ac.currentTime;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.06, t0 + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.8);
+      o.connect(g);
+      if (ac.createStereoPanner){
+        var pan = ac.createStereoPanner();
+        pan.pan.value = Math.random() * 1.2 - 0.6;
+        g.connect(pan);
+        pan.connect(bus);
+      } else {
+        g.connect(bus);
+      }
+      o.start(t0);
+      o.stop(t0 + 3);
+    }
+    ring();
+    setTimeout(ring, 700);
+    clearInterval(bellTimer);
+    bellTimer = setInterval(ring, 3400 + Math.random() * 900);
+  }
+
+  function tuneNoise(){
+    if (!ac || !state.playing) return;
+    var dur = 0.32, sr = ac.sampleRate;
+    var buf = ac.createBuffer(1, Math.floor(sr * dur), sr);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++){
+      var k = i / d.length;
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - k, 2) * 0.45;
+    }
+    var src = ac.createBufferSource();
+    src.buffer = buf;
+    var bp = ac.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1500;
+    bp.Q.value = 0.7;
+    var g = ac.createGain();
+    g.gain.value = 0.3;
+    src.connect(bp);
+    bp.connect(g);
+    g.connect(master);
+    src.start();
+  }
+
+  function play(){
+    if (state.playing) return;
+    if (!initAudio()){ toast(t('audioBlocked')); return; }
+    if (ac.state === 'suspended'){ try { ac.resume(); } catch(e){} }
+    state.playing = true;
+    state.sessionStarted = true;
+    startStation(cur());
+    setMaster(state.volume * 0.6, 0.25);
+    state.startedAt = Date.now() - state.elapsed * 1000;
+    recordRecent(cur().id);
+    renderPlayState();
+  }
+
+  function pause(){
+    if (!state.playing) return;
+    state.playing = false;
+    setMaster(0, 0.12);
+    setTimeout(function(){ if (!state.playing) stopVoices(); }, 260);
+    renderPlayState();
+  }
+
+  function togglePlay(){ tick(); if (state.playing) pause(); else play(); }
+
+  function switchStation(i, msg, city){
+    var wasPlaying = state.playing;
+    state.station = i;
+    state.tuneCity = city || null;
+    state.elapsed = 0;
+    state.startedAt = Date.now();
+    recordRecent(cur().id);
+    if (wasPlaying){
+      if (ac){ startStation(cur()); tuneNoise(); }
+    } else {
+      play();
+    }
+    renderAll();
+    if (msg) toast(msg);
+    else toast(tpl('toastPlaying', { name: cur().name[state.lang] }));
+  }
+
+  function selectStation(i){
+    tick();
+    if (i === state.station && !state.tuneCity){ togglePlay(); return; }
+    switchStation(i);
+  }
+
+  function recordRecent(id){
+    var next = [id].concat(state.recent.filter(function(x){ return x !== id; })).slice(0, 5);
+    state.recent = next;
+    store.set('fern.recent', JSON.stringify(next));
+    renderSaved();
+  }
+
+  /* ── waves ───────────────────────────────────── */
+  function buildWave(el, bars, mini){
+    var html = '';
+    for (var i = 0; i < bars; i++){
+      var h = mini ? (30 + Math.round(Math.random() * 66)) : (14 + Math.round(Math.random() * 82));
+      var dur = (0.9 + Math.random() * 0.9).toFixed(2);
+      var delay = (Math.random() * 1.4).toFixed(2);
+      html += '<i style="--h:' + h + '%;animation-duration:' + dur + 's;animation-delay:-' + delay + 's"></i>';
+    }
+    el.innerHTML = html;
+  }
+
+  /* ── render: live ────────────────────────────── */
+  function renderHero(){
+    var st = cur(), L = state.lang, city = cityOf();
+    var mark = $('heroMark');
+    mark.textContent = st.mark;
+    mark.style.cssText = coverStyle(st, 'rgba(255,255,255,.18)');
+    $('heroName').textContent = st.name[L];
+    $('heroShow').textContent = st.show[L] + ' · ' + st.host[L];
+    $('heroChan').textContent = 'CH ' + pad2(st.idx + 1) + ' · ' + city.freq + ' FM';
+    $('heroCity').textContent = city[L];
+    $('heroListeners').textContent = tpl('npListeners', { n: fmt(liveCount(st)) });
+    $('heroElapsed').textContent = fmtTime(state.elapsed);
+    $('heroOpen').setAttribute('aria-label', t('expand') + ' · ' + st.name[L]);
+    updateMediaSession();
+  }
+
+  function renderRail(){
+    var L = state.lang;
+    $('rail').innerHTML = STATIONS.map(function(st){
+      var on = st.idx === state.station;
+      return '<button class="rail-card' + (on ? ' on' : '') + '" data-tune="' + st.idx + '" aria-label="' + esc(st.name[L]) + '">' +
+        '<span class="cover rail-cover" style="' + coverStyle(st) + '">' + st.mark +
+          (on ? '<span class="rail-on">' + esc(t('live')) + '</span>' : '') +
+          '<span class="rail-freq">' + st.freq + '</span>' +
+        '</span>' +
+        '<span class="rail-name">' + esc(st.name[L]) + '</span>' +
+        '<span class="rail-show">' + esc(st.show[L]) + '</span>' +
+      '</button>';
+    }).join('');
+    requestAnimationFrame(scrollRailToActive);
+  }
+
+  function scrollRailToActive(){
+    var rail = $('rail'), on = rail.querySelector('.rail-card.on');
+    if (!on || !rail.clientWidth) return;
+    var r = rail.getBoundingClientRect(), o = on.getBoundingClientRect();
+    if (o.left >= r.left + 10 && o.right <= r.right - 10) return;
+    var left = Math.max(0, rail.scrollLeft + (o.left - r.left) - 18);
+    if (rail.scrollTo){ try { rail.scrollTo({ left: left, behavior: 'smooth' }); } catch(e){ rail.scrollLeft = left; } }
+    else rail.scrollLeft = left;
+  }
+
+  function schedHTML(st){
+    var L = state.lang;
+    return st.sched.map(function(s, i){
+      return '<li' + (i === 0 ? ' class="on"' : '') + '>' +
+        '<span class="t">' + s.t + '</span>' +
+        '<span class="n">' + esc(s[L]) + '</span>' +
+        (i === 0 ? '<span class="badge">' + esc(t('schedLive')) + '</span>' : '') +
+      '</li>';
+    }).join('');
+  }
+
+  function renderSchedule(){
+    var st = cur();
+    $('schedStation').textContent = st.name[state.lang];
+    $('schedList').innerHTML = schedHTML(st);
+    $('sheetSched').innerHTML = schedHTML(st);
+  }
+
+  /* ── render: discover ────────────────────────── */
+  function renderCities(){
+    var L = state.lang;
+    var active = cityOf().zh;
+    $('cityGrid').innerHTML = CITIES.map(function(c, i){
+      var on = c.zh === active;
+      return '<button class="city-card' + (on ? ' on' : '') + '" data-city="' + i + '" aria-label="' + esc(c[L]) + ' ' + c.freq + ' FM">' +
+        '<span class="city-code">' + c.code + '</span>' +
+        '<span><span class="city-name">' + esc(c[L]) + '</span><span class="city-freq">' + c.freq + ' FM</span></span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function renderChips(){
+    var items = [
+      ['all', 'chipAll'], ['music', 'chipMusic'], ['talk', 'chipTalk'],
+      ['electronic', 'chipElectronic'], ['jazz', 'chipJazz']
+    ];
+    $('chips').innerHTML = items.map(function(it){
+      return '<button class="chip" data-filter="' + it[0] + '" aria-pressed="' + (state.filter === it[0]) + '">' +
+        '<span>' + esc(t(it[1])) + '</span></button>';
+    }).join('');
+  }
+
+  function visibleStations(){
+    if (state.filter === 'all') return STATIONS;
+    return STATIONS.filter(function(s){ return s.cat === state.filter; });
+  }
+
+  function renderStations(){
+    var L = state.lang;
+    $('stationList').innerHTML = visibleStations().map(function(st){
+      var on = st.idx === state.station;
+      return '<li class="row-item solo' + (on ? ' on' : '') + '">' +
+        '<button class="row" data-tune="' + st.idx + '">' +
+          '<span class="cover row-cover" style="' + coverStyle(st) + '">' + st.mark + '</span>' +
+          '<span class="row-main">' +
+            '<span class="row-name">' + esc(st.name[L]) + '</span>' +
+            '<span class="row-sub">' + esc(st.show[L]) + ' · ' + esc(st.tag[L]) + '</span>' +
+          '</span>' +
+          '<span class="row-play" aria-hidden="true">' +
+            '<svg class="ico i-play"><use href="#i-play"/></svg>' +
+            '<svg class="ico i-pause"><use href="#i-pause"/></svg>' +
+          '</span>' +
+        '</button>' +
+      '</li>';
+    }).join('');
+  }
+
+  function centerChip(){
+    var chips = $('chips');
+    if (!chips || !chips.clientWidth) return;
+    var active = chips.querySelector('[data-filter="' + state.filter + '"]');
+    if (!active) return;
+    var cr = chips.getBoundingClientRect(), ar = active.getBoundingClientRect();
+    var left = chips.scrollLeft + (ar.left - cr.left) - (chips.clientWidth - active.offsetWidth) / 2;
+    left = Math.max(0, left);
+    if (chips.scrollTo){ try { chips.scrollTo({ left: left, behavior: 'smooth' }); } catch(e){ chips.scrollLeft = left; } }
+    else chips.scrollLeft = left;
+  }
+
+  /* ── render: saved ───────────────────────────── */
+  function savedRow(st){
+    var L = state.lang;
+    var on = st.idx === state.station;
+    return '<li class="row-item' + (on ? ' on' : '') + '">' +
+      '<button class="row" data-tune="' + st.idx + '">' +
+        '<span class="cover row-cover" style="' + coverStyle(st) + '">' + st.mark + '</span>' +
+        '<span class="row-main">' +
+          '<span class="row-name">' + esc(st.name[L]) + '</span>' +
+          '<span class="row-sub">' + esc(st.show[L]) + ' · ' + esc(st.host[L]) + '</span>' +
+        '</span>' +
+      '</button>' +
+      '<button class="row-heart" data-unfav="' + st.id + '" aria-label="' + esc(t('unfav')) + '">' +
+        '<svg class="ico" aria-hidden="true"><use href="#i-heart-fill"/></svg>' +
+      '</button>' +
+    '</li>';
+  }
+
+  function recentRow(st){
+    var L = state.lang;
+    var on = st.idx === state.station;
+    return '<li class="row-item solo' + (on ? ' on' : '') + '">' +
+      '<button class="row" data-tune="' + st.idx + '">' +
+        '<span class="cover row-cover" style="' + coverStyle(st) + '">' + st.mark + '</span>' +
+        '<span class="row-main">' +
+          '<span class="row-name">' + esc(st.name[L]) + '</span>' +
+          '<span class="row-sub">' + esc(st.show[L]) + ' · ' + esc(st.city[L]) + '</span>' +
+        '</span>' +
+        '<span class="row-clock" aria-hidden="true"><svg class="ico"><use href="#i-clock"/></svg></span>' +
+      '</button>' +
+    '</li>';
+  }
+
+  function blockHead(title, meta){
+    return '<div class="block-head"><h2 class="block-title">' + esc(title) + '</h2>' +
+      (meta ? '<span class="block-meta">' + esc(meta) + '</span>' : '') + '</div>';
+  }
+
+  function renderSaved(){
+    var saved = STATIONS.filter(function(s){ return state.favs.has(s.id); });
+    var recent = state.recent.map(function(id){
+      for (var i = 0; i < STATIONS.length; i++) if (STATIONS[i].id === id) return STATIONS[i];
+      return null;
+    }).filter(function(x){ return !!x; });
+
+    var html = '';
+    if (saved.length){
+      html += '<section class="block" style="margin-top:18px">' +
+        blockHead(t('savedSection'), tpl('savedCount', { n: saved.length })) +
+        '<ul class="rows">' + saved.map(savedRow).join('') + '</ul>' +
+      '</section>';
+    } else {
+      html += '<div class="empty">' +
+        '<span class="empty-ico"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg></span>' +
+        '<p class="empty-t">' + esc(t('emptyTitle')) + '</p>' +
+        '<p class="empty-s">' + esc(t('emptySub')) + '</p>' +
+        '<button class="btn" data-go="discover">' + esc(t('emptyBtn')) + '</button>' +
+      '</div>';
+    }
+    if (recent.length){
+      html += '<section class="block" style="margin-top:22px">' +
+        blockHead(t('recentTitle'), '') +
+        '<ul class="rows">' + recent.map(recentRow).join('') + '</ul>' +
+      '</section>';
+    }
+    $('savedWrap').innerHTML = html;
+  }
+
+  /* ── render: player ──────────────────────────── */
+  function renderMini(){
+    var st = cur(), L = state.lang;
+    var mark = $('miniMark');
+    mark.textContent = st.mark;
+    mark.style.cssText = coverStyle(st);
+    $('miniName').textContent = st.name[L];
+    $('miniShow').textContent = st.show[L] + ' · ' + st.host[L];
+  }
+
+  function renderSheet(){
+    var st = cur(), L = state.lang, city = cityOf();
+    var cover = $('cover');
+    cover.style.cssText = coverStyle(st);
+    $('coverMark').textContent = st.mark;
+    $('coverFreq').textContent = city.freq + ' FM';
+    $('sheetName').textContent = st.name[L];
+    $('sheetShow').textContent = st.show[L] + ' · ' + st.host[L] + ' · ' + city[L];
+    $('sheetFreq').textContent = city.freq + ' FM';
+    $('sheetListeners').textContent = fmt(liveCount(st));
+    $('sheetElapsed').textContent = fmtTime(state.elapsed);
+    $('sheetDesc').textContent = st.desc[L];
+    $('switchRow').innerHTML = STATIONS.map(function(s){
+      var on = s.idx === state.station;
+      return '<button class="switch-card' + (on ? ' on' : '') + '" data-switch="' + s.idx + '">' +
+        '<span class="mark-sm" style="' + coverStyle(s) + '">' + s.mark + '</span>' +
+        '<span class="switch-name">' + esc(s.name[L]) + '</span>' +
+      '</button>';
+    }).join('');
+    requestAnimationFrame(scrollSwitchToActive);
+  }
+
+  function scrollSwitchToActive(){
+    var row = $('switchRow'), on = row.querySelector('.switch-card.on');
+    if (!on || !row.clientWidth) return;
+    var r = row.getBoundingClientRect(), o = on.getBoundingClientRect();
+    if (o.left >= r.left && o.right <= r.right) return;
+    var left = Math.max(0, row.scrollLeft + (o.left - r.left) - 10);
+    if (row.scrollTo){ try { row.scrollTo({ left: left, behavior: 'smooth' }); } catch(e){ row.scrollLeft = left; } }
+    else row.scrollLeft = left;
+  }
+
+  function renderFav(){
+    var on = state.favs.has(cur().id);
+    ['heroFav', 'sheetFav'].forEach(function(id){
+      var el = $(id);
+      el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      el.setAttribute('aria-label', on ? t('unfav') : t('fav'));
+    });
+  }
+
+  function renderPlayState(){
+    document.body.setAttribute('data-play', state.playing ? 'on' : 'off');
+    document.body.classList.toggle('has-mini', !!state.sessionStarted);
+    ['heroPlay', 'miniPlay', 'sheetPlay'].forEach(function(id){
+      $(id).setAttribute('aria-label', t(state.playing ? 'pause' : 'play'));
+    });
+    $('sheetClose').setAttribute('aria-label', t('close'));
+    $('sheetShare').setAttribute('aria-label', t('share'));
+    $('prevBtn').setAttribute('aria-label', t('prev'));
+    $('nextBtn').setAttribute('aria-label', t('next'));
+    $('miniOpen').setAttribute('aria-label', t('expand') + ' · ' + cur().name[state.lang]);
+    updateMediaSession();
+  }
+
+  function renderAll(){
+    renderRail();
+    renderSchedule();
+    renderCities();
+    renderStations();
+    renderHero();
+    renderMini();
+    renderSheet();
+    renderFav();
+    renderSaved();
+  }
+
+  function updateMediaSession(){
+    if (!('mediaSession' in navigator) || !window.MediaMetadata) return;
+    var st = cur(), L = state.lang, city = cityOf();
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: st.show[L],
+        artist: st.host[L] + ' · ' + st.name[L],
+        album: 'FERN — ' + city[L],
+        artwork: [{ src: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23163300%22/%3E%3Cg fill=%22%239fe870%22%3E%3Crect x=%2213%22 y=%2226%22 width=%226%22 height=%2212%22 rx=%223%22/%3E%3Crect x=%2223%22 y=%2218%22 width=%226%22 height=%2228%22 rx=%223%22/%3E%3Crect x=%2233%22 y=%2214%22 width=%226%22 height=%2236%22 rx=%223%22/%3E%3Crect x=%2243%22 y=%2224%22 width=%226%22 height=%2216%22 rx=%223%22/%3E%3C/g%3E%3C/svg%3E', sizes: '512x512', type: 'image/svg+xml' }]
+      });
+      navigator.mediaSession.playbackState = state.playing ? 'playing' : 'paused';
+    } catch(e){}
+  }
+
+  /* ── tabs ────────────────────────────────────── */
+  function setTab(name){
+    if (state.tab === name){
+      var cv = $('view-' + name);
+      if (cv){
+        if (cv.scrollTo){ try { cv.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cv.scrollTop = 0; } }
+        else cv.scrollTop = 0;
+      }
+      return;
+    }
+    state.tab = name;
+    $$('.view').forEach(function(v){
+      v.classList.toggle('active', v.getAttribute('data-view') === name);
+    });
+    $$('.tab').forEach(function(b){
+      b.setAttribute('aria-selected', b.getAttribute('data-tab') === name ? 'true' : 'false');
+    });
+    if (name === 'saved') renderSaved();
+    if (name === 'discover'){
+      renderCities();
+      renderStations();
+      requestAnimationFrame(centerChip);
+    }
+  }
+
+  function goDiscoverStations(){
+    setTab('discover');
+    var v = $('view-discover'), el = $('stationsSection');
+    requestAnimationFrame(function(){
+      var top = el.offsetTop - 8;
+      if (v.scrollTo){ try { v.scrollTo({ top: top, behavior: 'smooth' }); } catch(e){ v.scrollTop = top; } }
+      else v.scrollTop = top;
+    });
+  }
+
+  /* ── language ────────────────────────────────── */
+  function setLang(lang, initial){
+    state.lang = lang;
+    store.set('fern.lang', lang);
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    var d = T[lang];
+    document.title = d.docTitle;
+    $$('[data-i18n]').forEach(function(el){
+      var k = el.getAttribute('data-i18n');
+      if (d[k] != null) el.textContent = d[k];
+    });
+    $$('[data-i18n-html]').forEach(function(el){
+      var k = el.getAttribute('data-i18n-html');
+      if (d[k] != null) el.innerHTML = d[k];
+    });
+    $$('[data-i18n-ph]').forEach(function(el){
+      var k = el.getAttribute('data-i18n-ph');
+      if (d[k] != null) el.setAttribute('placeholder', d[k]);
+    });
+    $('langZh').setAttribute('aria-pressed', lang === 'zh' ? 'true' : 'false');
+    $('langEn').setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
+    $('sheet').setAttribute('aria-label', t('player'));
+    $('tabbar').setAttribute('aria-label', t('navLabel'));
+    renderChips();
+    renderAll();
+    renderPlayState();
+    if (!initial) toast(lang === 'zh' ? '已切换为中文' : 'Switched to English');
+  }
+
+  /* ── favourites ──────────────────────────────── */
+  function setFav(id, on){
+    if (on) state.favs.add(id); else state.favs.delete(id);
+    store.set('fern.favs', JSON.stringify(Array.from(state.favs)));
+    renderFav();
+    renderSaved();
+    toast(on ? t('toastFav') : t('toastUnfav'));
+  }
+  function toggleFav(){ tick(); setFav(cur().id, !state.favs.has(cur().id)); }
+
+  /* ── sheet ───────────────────────────────────── */
+  var lastFocus = null, histPushed = false;
+  var sheet = $('sheet'), appBody = $('appBody');
+
+  function openSheet(){
+    if (sheet.classList.contains('open')) return;
+    lastFocus = document.activeElement;
+    renderSheet();
+    $('sheetScroll').scrollTop = 0;
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    sheet.classList.remove('drag');
+    sheet.classList.add('open');
+    sheet.removeAttribute('inert');
+    sheet.setAttribute('aria-hidden', 'false');
+    appBody.setAttribute('inert', '');
+    document.body.classList.add('lock');
+    try { sheet.focus({ preventScroll: true }); } catch(e){ sheet.focus(); }
+    if (!histPushed){
+      try { history.pushState({ fernPlayer: 1 }, ''); histPushed = true; } catch(e){}
+    }
+  }
+
+  function closeSheet(fromHistory){
+    if (!sheet.classList.contains('open')) return;
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden', 'true');
+    sheet.setAttribute('inert', '');
+    appBody.removeAttribute('inert');
+    document.body.classList.remove('lock');
+    if (lastFocus && lastFocus.focus){ try { lastFocus.focus({ preventScroll: true }); } catch(e){} }
+    if (fromHistory){ histPushed = false; return; }
+    if (histPushed){
+      histPushed = false;
+      try { history.back(); } catch(e){}
+    }
+  }
+
+  function share(){
+    var st = cur(), L = state.lang;
+    var data = { title: 'FERN', text: st.name[L] + ' · ' + st.show[L], url: location.href };
+    try {
+      if (navigator.share){ navigator.share(data).catch(function(){}); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(data.url).then(function(){ toast(t('toastCopied')); }, function(){ toast(t('toastCopied')); });
+        return;
+      }
+      toast(t('toastCopied'));
+    } catch(e){}
+  }
+
+  /* ── drag to close ───────────────────────────── */
+  var drag = null;
+  function dragStart(e){
+    if (!sheet.classList.contains('open')) return;
+    if (e.target.closest('button') || e.target.closest('input')) return;
+    drag = { y: e.clientY, t: Date.now(), dy: 0, id: e.pointerId };
+    sheet.classList.add('drag');
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err){}
+  }
+  function dragMove(e){
+    if (!drag || e.pointerId !== drag.id) return;
+    var dy = Math.max(0, e.clientY - drag.y);
+    drag.dy = dy;
+    sheet.style.transform = 'translateY(' + dy + 'px)';
+  }
+  function dragEnd(e){
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    var dy = drag.dy, dt = Date.now() - drag.t;
+    var shouldClose = dy > 110 || (dt < 260 && dy > 36);
+    drag = null;
+    if (shouldClose){
+      sheet.style.transition = 'none';
+      sheet.style.transform = 'translateY(' + dy + 'px)';
+      void sheet.offsetHeight;
+      requestAnimationFrame(function(){
+        sheet.style.transition = '';
+        sheet.style.transform = '';
+        sheet.classList.remove('drag');
+        closeSheet();
+      });
+    } else {
+      sheet.classList.remove('drag');
+      sheet.style.transform = '';
+    }
+  }
+
+  /* ── events ──────────────────────────────────── */
+  function bind(){
+    $('brandBtn').addEventListener('click', function(){
+      tick();
+      setTab('live');
+      $('view-live').scrollTop = 0;
+    });
+
+    $('tabbar').addEventListener('click', function(e){
+      var b = e.target.closest('[data-tab]');
+      if (!b) return;
+      tick();
+      setTab(b.getAttribute('data-tab'));
+    });
+
+    $('goDiscover').addEventListener('click', function(){ tick(); goDiscoverStations(); });
+
+    $('heroPlay').addEventListener('click', togglePlay);
+    $('miniPlay').addEventListener('click', togglePlay);
+    $('sheetPlay').addEventListener('click', togglePlay);
+    $('heroFav').addEventListener('click', toggleFav);
+    $('sheetFav').addEventListener('click', toggleFav);
+    $('heroOpen').addEventListener('click', openSheet);
+    $('miniOpen').addEventListener('click', openSheet);
+    $('sheetClose').addEventListener('click', function(){ closeSheet(); });
+    $('sheetShare').addEventListener('click', share);
+
+    $('prevBtn').addEventListener('click', function(){
+      tick();
+      switchStation((state.station - 1 + STATIONS.length) % STATIONS.length);
+    });
+    $('nextBtn').addEventListener('click', function(){
+      tick();
+      switchStation((state.station + 1) % STATIONS.length);
+    });
+
+    $('rail').addEventListener('click', function(e){
+      var b = e.target.closest('[data-tune]');
+      if (b) selectStation(parseInt(b.getAttribute('data-tune'), 10));
+    });
+
+    $('chips').addEventListener('click', function(e){
+      var b = e.target.closest('[data-filter]');
+      if (!b) return;
+      state.filter = b.getAttribute('data-filter');
+      renderChips();
+      renderStations();
+      centerChip();
+      tick();
+    });
+
+    $('stationList').addEventListener('click', function(e){
+      var b = e.target.closest('[data-tune]');
+      if (b) selectStation(parseInt(b.getAttribute('data-tune'), 10));
+    });
+
+    $('cityGrid').addEventListener('click', function(e){
+      var b = e.target.closest('[data-city]');
+      if (!b) return;
+      var c = CITIES[parseInt(b.getAttribute('data-city'), 10)];
+      tick();
+      switchStation(c.st, tpl('toastTuned', { city: c[state.lang], freq: c.freq }), c);
+    });
+
+    $('savedWrap').addEventListener('click', function(e){
+      var un = e.target.closest('[data-unfav]');
+      if (un){ tick(); setFav(un.getAttribute('data-unfav'), false); return; }
+      var go = e.target.closest('[data-go]');
+      if (go){ tick(); setTab('discover'); return; }
+      var tune = e.target.closest('[data-tune]');
+      if (tune) selectStation(parseInt(tune.getAttribute('data-tune'), 10));
+    });
+
+    $('switchRow').addEventListener('click', function(e){
+      var b = e.target.closest('[data-switch]');
+      if (!b) return;
+      tick();
+      switchStation(parseInt(b.getAttribute('data-switch'), 10));
+    });
+
+    $('langZh').addEventListener('click', function(){ if (state.lang !== 'zh') setLang('zh'); });
+    $('langEn').addEventListener('click', function(){ if (state.lang !== 'en') setLang('en'); });
+
+    $('vol').addEventListener('input', function(e){
+      state.volume = parseInt(e.target.value, 10) / 100;
+      store.set('fern.vol', String(state.volume));
+      $('volVal').textContent = e.target.value;
+      if (state.playing) setMaster(state.volume * 0.6, 0.06);
+    });
+
+    $('subForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var v = $('email').value.trim();
+      var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+      if (!ok){ toast(t('toastEmail')); $('email').focus(); return; }
+      toast(t('toastSub'));
+      $('email').value = '';
+      $('email').blur();
+    });
+
+    $('sheetHead').addEventListener('pointerdown', dragStart);
+    $('cover').addEventListener('pointerdown', dragStart);
+    window.addEventListener('pointermove', dragMove, { passive: true });
+    window.addEventListener('pointerup', dragEnd);
+    window.addEventListener('pointercancel', dragEnd);
+
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closeSheet();
+    });
+
+    window.addEventListener('popstate', function(){
+      if (sheet.classList.contains('open')) closeSheet(true);
+      else histPushed = false;
+    });
+
+    if ('mediaSession' in navigator && navigator.mediaSession.setActionHandler){
+      try {
+        navigator.mediaSession.setActionHandler('play', function(){ if (!state.playing) play(); });
+        navigator.mediaSession.setActionHandler('pause', function(){ if (state.playing) pause(); });
+        navigator.mediaSession.setActionHandler('previoustrack', function(){ switchStation((state.station - 1 + STATIONS.length) % STATIONS.length); });
+        navigator.mediaSession.setActionHandler('nexttrack', function(){ switchStation((state.station + 1) % STATIONS.length); });
+      } catch(e){}
+    }
+  }
+
+  /* ── boot ────────────────────────────────────── */
+  function boot(){
+    /* A reloaded page inherits the previous entry's history state; the sheet
+       itself is never restored, so drop the marker to keep back/close in sync. */
+    try {
+      if (history.state && history.state.fernPlayer){
+        history.replaceState(null, '');
+        histPushed = false;
+      }
+    } catch(e){}
+    buildWave($('heroWave'), 38, false);
+    buildWave($('sheetWave'), 46, false);
+    buildWave($('miniWave'), 4, true);
+    $('vol').value = Math.round(state.volume * 100);
+    $('volVal').textContent = String(Math.round(state.volume * 100));
+
+    bind();
+    setLang(state.lang, true);
+    renderPlayState();
+    setTab('live');
+
+    setInterval(function(){
+      if (state.playing){
+        state.elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
+        $('heroElapsed').textContent = fmtTime(state.elapsed);
+        $('sheetElapsed').textContent = fmtTime(state.elapsed);
+      }
+    }, 1000);
+
+    setInterval(function(){
+      STATIONS.forEach(function(s){
+        s._delta = Math.max(-500, Math.min(500, s._delta + Math.round((Math.random() - 0.5) * 80)));
+      });
+      $('heroListeners').textContent = tpl('npListeners', { n: fmt(liveCount(cur())) });
+      $('sheetListeners').textContent = fmt(liveCount(cur()));
+    }, 6000);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+</body>
+</html>
